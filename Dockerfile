@@ -1,41 +1,29 @@
-# Stage 1: Builder
-FROM node:20-alpine AS builder
+# Single stage: Bun runs TypeScript directly
+FROM oven/bun:1-alpine
 
 WORKDIR /app
 
-# Copy package files first for better caching
-COPY package*.json ./
-RUN npm ci
+# Copy package files
+COPY package.json bun.lockb* ./
+
+# Install dependencies
+RUN bun install --frozen-lockfile --production
 
 # Copy source code
-COPY . .
-
-# Build application
-RUN npm run build
-
-# Stage 2: Runtime
-FROM node:20-alpine
-
-WORKDIR /app
-
-# Copy only production dependencies
-COPY package*.json ./
-RUN npm ci --only=production
-
-# Copy built application from builder stage
-COPY --from=builder /app/dist ./dist
+COPY src ./src
+COPY tsconfig.json ./
 
 # Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -S appuser -u 1001 -G appgroup
 
 # Switch to non-root user
-USER nodejs
+USER appuser
 
 # Set production environment
 ENV NODE_ENV=production
 
 # No ports to expose (worker is outbound-only)
 
-# Run application
-CMD ["node", "dist/index.js"]
+# Run application directly from TypeScript
+CMD ["bun", "run", "src/index.ts"]

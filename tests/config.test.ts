@@ -2,7 +2,7 @@
  * Configuration Loader Tests
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
 import { loadConfig, ConfigError } from '../src/config/index';
 
 describe('Configuration Loader', () => {

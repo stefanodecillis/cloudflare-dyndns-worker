@@ -1,8 +1,9 @@
-version: '3.8'
-
 services:
   dyndns:
-    build: .
+    # Use pre-built image from GitHub Container Registry
+    image: ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest
+    # Or build locally:
+    # build: .
     container_name: cloudflare-dyndns
     restart: unless-stopped
 
@@ -40,8 +41,3 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
-# Uncomment for custom network
-# networks:
-#   default:
-#     name: dyndns-network

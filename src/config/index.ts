@@ -190,6 +190,95 @@ export async function loadArrayConfig(): Promise<Config> {
 }
 
 /**
+ * Load configuration synchronously (legacy format with full CLOUDFLARE_ZONES)
+ * Used for testing and cases where zone IDs are already known
+ */
+export function loadConfig(): Config {
+  // Cloudflare authentication
+  const apiToken = process.env.CLOUDFLARE_API_TOKEN?.trim();
+  const email = process.env.CLOUDFLARE_EMAIL?.trim();
+  const apiKey = process.env.CLOUDFLARE_API_KEY?.trim();
+
+  // Require either API token OR (email + API key)
+  if (!apiToken && !(email && apiKey)) {
+    throw new ConfigError(
+      'Either CLOUDFLARE_API_TOKEN or (CLOUDFLARE_EMAIL + CLOUDFLARE_API_KEY) must be provided'
+    );
+  }
+
+  // Parse CLOUDFLARE_ZONES array
+  const zonesJson = process.env.CLOUDFLARE_ZONES?.trim();
+  if (!zonesJson) {
+    throw new ConfigError('CLOUDFLARE_ZONES environment variable is required');
+  }
+
+  let zones: ZoneConfig[];
+  try {
+    const parsed = JSON.parse(zonesJson);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      throw new ConfigError('CLOUDFLARE_ZONES must be a non-empty array');
+    }
+    zones = parsed;
+  } catch (error) {
+    if (error instanceof ConfigError) {
+      throw error;
+    }
+    throw new ConfigError(
+      `Failed to parse CLOUDFLARE_ZONES: ${error instanceof Error ? error.message : 'Invalid JSON'}`
+    );
+  }
+
+  // Validate zones
+  for (let i = 0; i < zones.length; i++) {
+    const zone = zones[i];
+    if (!zone.zoneId || typeof zone.zoneId !== 'string') {
+      throw new ConfigError(`Zone ${i + 1}: zoneId is required`);
+    }
+    if (!zone.domain || typeof zone.domain !== 'string') {
+      throw new ConfigError(`Zone ${i + 1}: domain is required`);
+    }
+    if (!Array.isArray(zone.records) || zone.records.length === 0) {
+      throw new ConfigError(`Zone ${i + 1}: records array must not be empty`);
+    }
+
+    // Validate records
+    for (let j = 0; j < zone.records.length; j++) {
+      const record = zone.records[j];
+      if (!record.name || typeof record.name !== 'string') {
+        throw new ConfigError(`Zone ${i + 1}, Record ${j + 1}: name is required`);
+      }
+      if (record.type !== 'A' && record.type !== 'AAAA') {
+        throw new ConfigError(`Zone ${i + 1}, Record ${j + 1}: type must be 'A' or 'AAAA'`);
+      }
+    }
+  }
+
+  // Parse intervals
+  const syncInterval = parseInterval(
+    process.env.SYNC_INTERVAL,
+    300, // 5 minutes default
+    'SYNC_INTERVAL'
+  );
+
+  const ipCheckInterval = parseInterval(
+    process.env.IP_CHECK_INTERVAL,
+    60, // 1 minute default
+    'IP_CHECK_INTERVAL'
+  );
+
+  return {
+    cloudflare: {
+      apiToken: apiToken || '',
+      email,
+      apiKey,
+      zones,
+    },
+    syncInterval,
+    ipCheckInterval,
+  };
+}
+
+/**
  * Validate configuration (useful for testing)
  */
 export function validateConfig(config: Config): void {

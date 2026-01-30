@@ -202,8 +202,9 @@ export async function getPublicIPv4(): Promise<string> {
  */
 export async function getPublicIPv6(): Promise<string> {
   const providers = [
-    // IPv6-capable providers
+    // IPv6-capable providers (multiple for redundancy)
     () => fetchJSONProvider('https://api64.ipify.org?format=json'),
+    () => fetchPlainProvider('https://ipv6.icanhazip.com'),
   ];
 
   const ip = await tryProviders(providers, 'public IPv6');
