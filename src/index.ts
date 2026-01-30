@@ -23,6 +23,15 @@ import { startWorker } from './worker';
  */
 async function main(): Promise<void> {
   try {
+    // TEMPORARY: Log raw environment variables for debugging
+    console.log('[DEBUG] === RAW ENVIRONMENT VARIABLES ===');
+    console.log('[DEBUG] CLOUDFLARE_API_TOKEN:', process.env.CLOUDFLARE_API_TOKEN ? `${process.env.CLOUDFLARE_API_TOKEN.substring(0, 8)}...` : 'NOT SET');
+    console.log('[DEBUG] CLOUDFLARE_RECORDS:', process.env.CLOUDFLARE_RECORDS || 'NOT SET');
+    console.log('[DEBUG] IP_CHECK_INTERVAL:', process.env.IP_CHECK_INTERVAL || 'NOT SET (default: 60)');
+    console.log('[DEBUG] SYNC_INTERVAL:', process.env.SYNC_INTERVAL || 'NOT SET (default: 300)');
+    console.log('[DEBUG] ===================================');
+    console.log('');
+
     // Load configuration from environment variables
     console.log('[INFO] Loading configuration...');
     console.log('[INFO] Using array configuration format (CLOUDFLARE_RECORDS)');

@@ -2,8 +2,8 @@
  * Configuration Loader Tests
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
-import { loadConfig, ConfigError } from '../src/config/index';
+import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test';
+import { loadConfig, loadArrayConfig, ConfigError } from '../src/config/index';
 
 describe('Configuration Loader', () => {
   const originalEnv = { ...process.env };
@@ -264,6 +264,155 @@ describe('Configuration Loader', () => {
 
       expect(() => loadConfig()).toThrow(ConfigError);
       expect(() => loadConfig()).toThrow('Failed to parse CLOUDFLARE_ZONES');
+    });
+  });
+});
+
+describe('CLOUDFLARE_RECORDS Array Format (loadArrayConfig)', () => {
+  const originalEnv = { ...process.env };
+  let originalFetch: typeof fetch;
+
+  beforeEach(() => {
+    process.env = { ...originalEnv };
+    originalFetch = globalThis.fetch;
+  });
+
+  afterEach(() => {
+    process.env = { ...originalEnv };
+    globalThis.fetch = originalFetch;
+  });
+
+  // Helper to mock Cloudflare API
+  const mockCloudflareZones = (zones: Array<{ id: string; name: string }>) => {
+    globalThis.fetch = mock(() =>
+      Promise.resolve(new Response(JSON.stringify({
+        success: true,
+        errors: [],
+        messages: [],
+        result: zones,
+      })))
+    );
+  };
+
+  describe('JSON Parsing from Docker Compose', () => {
+    it('parses JSON string exactly as it appears in docker-compose.yml', async () => {
+      process.env.CLOUDFLARE_API_TOKEN = 'test_token';
+      // This is exactly what YAML passes when using single quotes:
+      // CLOUDFLARE_RECORDS: '[{"zone":"example.com","subdomain":"www","proxy":false}]'
+      process.env.CLOUDFLARE_RECORDS = '[{"zone":"example.com","subdomain":"www","proxy":false}]';
+
+      mockCloudflareZones([{ id: 'zone_123', name: 'example.com' }]);
+
+      const config = await loadArrayConfig();
+      expect(config.cloudflare.zones).toHaveLength(1);
+      expect(config.cloudflare.zones[0].records[0].name).toBe('www.example.com');
+    });
+
+    it('parses multiple records from single JSON string', async () => {
+      process.env.CLOUDFLARE_API_TOKEN = 'test_token';
+      process.env.CLOUDFLARE_RECORDS = '[{"zone":"example.com","subdomain":"ha-trani","proxy":false},{"zone":"example.com","subdomain":"automation","proxy":false},{"zone":"example.com","subdomain":"media","proxy":false}]';
+
+      mockCloudflareZones([{ id: 'zone_123', name: 'example.com' }]);
+
+      const config = await loadArrayConfig();
+      expect(config.cloudflare.zones).toHaveLength(1);
+      expect(config.cloudflare.zones[0].records).toHaveLength(3);
+      expect(config.cloudflare.zones[0].records[0].name).toBe('ha-trani.example.com');
+      expect(config.cloudflare.zones[0].records[1].name).toBe('automation.example.com');
+      expect(config.cloudflare.zones[0].records[2].name).toBe('media.example.com');
+    });
+
+    it('parses real-world docker-compose config with 8 subdomains', async () => {
+      process.env.CLOUDFLARE_API_TOKEN = 'test_token';
+      // Exact format user would paste in docker-compose.yml
+      process.env.CLOUDFLARE_RECORDS = '[{"zone":"stefanodecillis.com","subdomain":"ha-trani","proxy":false},{"zone":"stefanodecillis.com","subdomain":"automation","proxy":false},{"zone":"stefanodecillis.com","subdomain":"media","proxy":false},{"zone":"stefanodecillis.com","subdomain":"jelly","proxy":false},{"zone":"stefanodecillis.com","subdomain":"immich","proxy":false},{"zone":"stefanodecillis.com","subdomain":"auth","proxy":false},{"zone":"stefanodecillis.com","subdomain":"actual","proxy":false},{"zone":"stefanodecillis.com","subdomain":"dsm","proxy":false}]';
+
+      mockCloudflareZones([{ id: 'zone_abc', name: 'stefanodecillis.com' }]);
+
+      const config = await loadArrayConfig();
+      expect(config.cloudflare.zones).toHaveLength(1);
+      expect(config.cloudflare.zones[0].records).toHaveLength(8);
+      expect(config.cloudflare.zones[0].domain).toBe('stefanodecillis.com');
+    });
+
+    it('handles root domain (empty subdomain)', async () => {
+      process.env.CLOUDFLARE_API_TOKEN = 'test_token';
+      process.env.CLOUDFLARE_RECORDS = '[{"zone":"example.com","subdomain":"","proxy":false}]';
+
+      mockCloudflareZones([{ id: 'zone_123', name: 'example.com' }]);
+
+      const config = await loadArrayConfig();
+      expect(config.cloudflare.zones[0].records[0].name).toBe('example.com');
+    });
+
+    it('handles missing subdomain field (defaults to root)', async () => {
+      process.env.CLOUDFLARE_API_TOKEN = 'test_token';
+      process.env.CLOUDFLARE_RECORDS = '[{"zone":"example.com","proxy":false}]';
+
+      mockCloudflareZones([{ id: 'zone_123', name: 'example.com' }]);
+
+      const config = await loadArrayConfig();
+      expect(config.cloudflare.zones[0].records[0].name).toBe('example.com');
+    });
+
+    it('handles proxy:true setting', async () => {
+      process.env.CLOUDFLARE_API_TOKEN = 'test_token';
+      process.env.CLOUDFLARE_RECORDS = '[{"zone":"example.com","subdomain":"www","proxy":true}]';
+
+      mockCloudflareZones([{ id: 'zone_123', name: 'example.com' }]);
+
+      const config = await loadArrayConfig();
+      expect(config.cloudflare.zones[0].records[0].proxied).toBe(true);
+    });
+
+    it('handles AAAA record type', async () => {
+      process.env.CLOUDFLARE_API_TOKEN = 'test_token';
+      process.env.CLOUDFLARE_RECORDS = '[{"zone":"example.com","subdomain":"ipv6","proxy":false,"type":"AAAA"}]';
+
+      mockCloudflareZones([{ id: 'zone_123', name: 'example.com' }]);
+
+      const config = await loadArrayConfig();
+      expect(config.cloudflare.zones[0].records[0].type).toBe('AAAA');
+    });
+  });
+
+  describe('Error Messages', () => {
+    it('shows helpful tip when JSON parsing fails', async () => {
+      process.env.CLOUDFLARE_API_TOKEN = 'test_token';
+      process.env.CLOUDFLARE_RECORDS = '{invalid json}';
+
+      await expect(loadArrayConfig()).rejects.toThrow('Failed to parse CLOUDFLARE_RECORDS');
+      await expect(loadArrayConfig()).rejects.toThrow('Tip: In docker-compose.yml, wrap JSON in single quotes');
+    });
+
+    it('shows error for empty array', async () => {
+      process.env.CLOUDFLARE_API_TOKEN = 'test_token';
+      process.env.CLOUDFLARE_RECORDS = '[]';
+
+      await expect(loadArrayConfig()).rejects.toThrow('non-empty array');
+    });
+
+    it('shows error for missing zone field', async () => {
+      process.env.CLOUDFLARE_API_TOKEN = 'test_token';
+      process.env.CLOUDFLARE_RECORDS = '[{"subdomain":"www","proxy":false}]';
+
+      await expect(loadArrayConfig()).rejects.toThrow('"zone" is required');
+    });
+
+    it('shows error for invalid record type', async () => {
+      process.env.CLOUDFLARE_API_TOKEN = 'test_token';
+      process.env.CLOUDFLARE_RECORDS = '[{"zone":"example.com","subdomain":"www","type":"CNAME"}]';
+
+      await expect(loadArrayConfig()).rejects.toThrow("'A' or 'AAAA'");
+    });
+
+    it('shows error when zone not found in Cloudflare', async () => {
+      process.env.CLOUDFLARE_API_TOKEN = 'test_token';
+      process.env.CLOUDFLARE_RECORDS = '[{"zone":"nonexistent.com","subdomain":"www","proxy":false}]';
+
+      mockCloudflareZones([{ id: 'zone_123', name: 'example.com' }]);
+
+      await expect(loadArrayConfig()).rejects.toThrow("Zone 'nonexistent.com' not found");
     });
   });
 });

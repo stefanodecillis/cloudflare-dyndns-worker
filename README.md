@@ -31,21 +31,34 @@ docker run -d \
 
 ### Using Docker Compose
 
+**Option A: Using .env file (recommended)**
+
 1. Copy `.env.example` to `.env`
 2. Edit `.env` with your configuration:
    ```bash
    CLOUDFLARE_API_TOKEN=your_api_token_here
-   CLOUDFLARE_RECORDS=[{"zone":"stefanodecillis.com","subdomain":"ha-trani","proxy":false},{"zone":"stefanodecillis.com","subdomain":"immich","proxy":false}]
+   CLOUDFLARE_RECORDS=[{"zone":"example.com","subdomain":"www","proxy":false},{"zone":"example.com","subdomain":"api","proxy":false}]
    ```
-3. Start the container:
-   ```bash
-   docker compose up -d
-   ```
+3. Start: `docker compose up -d`
 
-4. View logs:
-   ```bash
-   docker compose logs -f
-   ```
+**Option B: Inline in docker-compose.yml**
+
+```yaml
+services:
+  cloudflare-dyndns:
+    image: ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest
+    restart: unless-stopped
+    environment:
+      CLOUDFLARE_API_TOKEN: your_api_token_here
+      CLOUDFLARE_RECORDS: '[{"zone":"example.com","subdomain":"www","proxy":false}]'
+```
+
+> **Note:** Wrap JSON in single quotes (`'[...]'`) to avoid YAML parsing issues.
+
+**View logs:**
+```bash
+docker compose logs -f
+```
 
 ## ⚙️ Configuration
 

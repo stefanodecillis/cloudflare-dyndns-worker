@@ -86,7 +86,8 @@ export async function loadArrayConfig(): Promise<Config> {
       throw error;
     }
     throw new ConfigError(
-      `Failed to parse CLOUDFLARE_RECORDS: ${error instanceof Error ? error.message : 'Invalid JSON'}`
+      `Failed to parse CLOUDFLARE_RECORDS: ${error instanceof Error ? error.message : 'Invalid JSON'}. ` +
+      `Tip: In docker-compose.yml, wrap JSON in single quotes: CLOUDFLARE_RECORDS: '[{"zone":"example.com","subdomain":"www","proxy":false}]'`
     );
   }
 

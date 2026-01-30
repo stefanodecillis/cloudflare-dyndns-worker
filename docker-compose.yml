@@ -7,23 +7,17 @@ services:
     container_name: cloudflare-dyndns
     restart: unless-stopped
 
-    environment:
-      # REQUIRED: Cloudflare API Token
-      # Create at: https://dash.cloudflare.com/profile/api-tokens
-      # Permissions: Zone - DNS - Edit, Zone - Zone - Read
-      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+    # Option 1: Use .env file (recommended for complex configs)
+    env_file:
+      - .env
 
-      # REQUIRED: DNS records to manage (array format)
-      # NO ZONE IDs NEEDED - automatically resolved!
-      - CLOUDFLARE_RECORDS=${CLOUDFLARE_RECORDS}
-
-      # OPTIONAL: Sync intervals (seconds)
-      - SYNC_INTERVAL=${SYNC_INTERVAL:-300}
-      - IP_CHECK_INTERVAL=${IP_CHECK_INTERVAL:-60}
-
-    # Alternative: Use .env file
-    # env_file:
-    #   - .env
+    # Option 2: Inline environment variables
+    # NOTE: Wrap JSON in single quotes to avoid YAML parsing issues
+    # environment:
+    #   CLOUDFLARE_API_TOKEN: your_api_token_here
+    #   CLOUDFLARE_RECORDS: '[{"zone":"example.com","subdomain":"www","proxy":false},{"zone":"example.com","subdomain":"api","proxy":false}]'
+    #   IP_CHECK_INTERVAL: "60"
+    #   SYNC_INTERVAL: "300"
 
     # Resource limits (recommended for NAS)
     deploy:
