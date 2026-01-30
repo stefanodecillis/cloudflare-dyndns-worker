@@ -233,7 +233,7 @@ This checklist ensures the Cloudflare DynDNS Worker is production-ready and work
 
 - [ ] **amd64 Image**
   Steps:
-  1. Pull image: `docker pull yourusername/cloudflare-dyndns-worker:latest`
+  1. Pull image: `docker pull ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest`
   2. Run on x86_64 system
   Expected:
   - [ ] Image pulls successfully

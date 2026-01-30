@@ -196,33 +196,24 @@ Documentation
 - [ ] Enable GitHub Actions
 - [ ] Configure branch protection (optional)
 
-### Docker Hub
-
-- [ ] Create Docker Hub repository
-- [ ] Update README with Docker Hub username
-- [ ] Configure repository description
-- [ ] Add GitHub Actions secrets:
-  - `DOCKER_USERNAME` - Your Docker Hub username
-  - `DOCKER_PASSWORD` - Docker Hub access token
-
 ### Publishing
 
 ```bash
 # 1. Push to GitHub
-git remote add origin https://github.com/yourusername/cloudflare-dyndns-worker.git
+git remote add origin https://github.com/stefanodecillis/cloudflare-dyndns-worker.git
 git push -u origin main
 git push --tags
 
 # 2. GitHub Actions will automatically:
 #    - Build multi-arch Docker images
 #    - Run security scan
-#    - Push to Docker Hub
+#    - Push to GitHub Container Registry
 #    - Tag as :latest and :v0.1.0
 ```
 
 ### Post-Release
 
-- [ ] Test Docker image: `docker pull yourusername/cloudflare-dyndns-worker:latest`
+- [ ] Test Docker image: `docker pull ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest`
 - [ ] Verify multi-arch: Test on amd64 and arm64 (if available)
 - [ ] Create GitHub Release with release notes
 - [ ] Update package.json with repository URL
@@ -235,7 +226,7 @@ git push --tags
 All core features implemented, tested, and documented. The application is ready for:
 
 - ✅ Open source release
-- ✅ Docker Hub publishing
+- ✅ GitHub Container Registry publishing
 - ✅ Community adoption
 - ✅ Production deployment
 
@@ -246,29 +237,25 @@ All core features implemented, tested, and documented. The application is ready 
 1. **Publish to GitHub:**
    ```bash
    # Create repo on GitHub, then:
-   git remote add origin https://github.com/yourusername/cloudflare-dyndns-worker.git
+   git remote add origin https://github.com/stefanodecillis/cloudflare-dyndns-worker.git
    git push -u origin main --tags
    ```
 
-2. **Configure GitHub Secrets:**
-   - Go to Settings → Secrets and variables → Actions
-   - Add `DOCKER_USERNAME` and `DOCKER_PASSWORD`
-
-3. **Trigger CI/CD:**
+2. **Trigger CI/CD:**
    - GitHub Actions will auto-build on tag push
-   - Docker images will be published to Docker Hub
+   - Docker images will be published to GitHub Container Registry
+   - Uses `GITHUB_TOKEN` automatically (no secrets needed)
 
-4. **Test Deployment:**
+3. **Test Deployment:**
    ```bash
-   docker pull yourusername/cloudflare-dyndns-worker:latest
-   docker run -d -e CLOUDFLARE_API_TOKEN=... -e CLOUDFLARE_RECORDS='[...]' yourusername/cloudflare-dyndns-worker:latest
+   docker pull ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest
+   docker run -d -e CLOUDFLARE_API_TOKEN=... -e CLOUDFLARE_RECORDS='[...]' ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest
    ```
 
-5. **Share with Community:**
+4. **Share with Community:**
    - Post on Reddit (r/selfhosted, r/homelab)
    - Share on Twitter/X
    - Submit to awesome lists
-   - Add to Docker Hub featured
 
 ---
 

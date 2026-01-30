@@ -86,7 +86,7 @@ A: Yes! Run multiple workers for redundancy on different hosts. They're stateles
 A:
 ```bash
 # Docker
-docker pull yourusername/cloudflare-dyndns-worker:latest
+docker pull ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest
 docker stop cloudflare-dyndns
 docker rm cloudflare-dyndns
 # Run again with same command
@@ -237,8 +237,8 @@ A:
 A:
 - 📖 [Documentation](README.md)
 - 📖 [Deployment Guide](docs/DEPLOYMENT.md)
-- 🐛 [Issues](https://github.com/yourusername/cloudflare-dyndns-worker/issues)
-- 💬 [Discussions](https://github.com/yourusername/cloudflare-dyndns-worker/discussions)
+- 🐛 [Issues](https://github.com/stefanodecillis/cloudflare-dyndns-worker/issues)
+- 💬 [Discussions](https://github.com/stefanodecillis/cloudflare-dyndns-worker/discussions)
 
 **Q: How can I contribute?**
 A: See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. We welcome bug reports, feature requests, and code contributions!
@@ -248,4 +248,4 @@ A: No, this is an independent open-source project. It uses Cloudflare's public A
 
 ---
 
-Still have questions? [Open an issue](https://github.com/yourusername/cloudflare-dyndns-worker/issues)!
+Still have questions? [Open an issue](https://github.com/stefanodecillis/cloudflare-dyndns-worker/issues)!

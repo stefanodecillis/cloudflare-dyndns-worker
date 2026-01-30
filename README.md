@@ -132,7 +132,7 @@ CLOUDFLARE_RECORDS=[
 ### Build from Source
 
 ```bash
-git clone https://github.com/yourusername/cloudflare-dyndns-worker.git
+git clone https://github.com/stefanodecillis/cloudflare-dyndns-worker.git
 cd cloudflare-dyndns-worker
 docker build -t cloudflare-dyndns-worker .
 ```
@@ -153,7 +153,7 @@ The Docker image supports:
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/cloudflare-dyndns-worker.git
+git clone https://github.com/stefanodecillis/cloudflare-dyndns-worker.git
 cd cloudflare-dyndns-worker
 
 # Install dependencies
@@ -232,8 +232,8 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 ## ⭐ Support
 
 - 📖 [Documentation](.env.example)
-- 🐛 [Issues](https://github.com/yourusername/cloudflare-dyndns-worker/issues)
-- 💬 [Discussions](https://github.com/yourusername/cloudflare-dyndns-worker/discussions)
+- 🐛 [Issues](https://github.com/stefanodecillis/cloudflare-dyndns-worker/issues)
+- 💬 [Discussions](https://github.com/stefanodecillis/cloudflare-dyndns-worker/discussions)
 
 ---
 

@@ -10,7 +10,7 @@ Be respectful, constructive, and inclusive. We welcome contributions from everyo
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/cloudflare-dyndns-worker.git
+git clone https://github.com/stefanodecillis/cloudflare-dyndns-worker.git
 cd cloudflare-dyndns-worker
 
 # Install dependencies

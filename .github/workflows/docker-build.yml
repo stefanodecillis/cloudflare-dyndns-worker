@@ -42,16 +42,25 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image (multi-arch)
+      - name: Build Docker image for testing
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          load: true
           push: false
           tags: cloudflare-dyndns-worker:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Test container (amd64)
+      - name: Test container
         run: |
           docker run --rm cloudflare-dyndns-worker:test bun --version
+
+      - name: Build multi-arch image (validation only)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

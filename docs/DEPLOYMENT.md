@@ -15,7 +15,7 @@ This guide covers deploying Cloudflare DynDNS Worker on various platforms.
 ### Pulling the Image
 
 ```bash
-docker pull yourusername/cloudflare-dyndns-worker:latest
+docker pull ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest
 ```
 
 ### Running with Environment Variables
@@ -26,7 +26,7 @@ docker run -d \
   --restart unless-stopped \
   -e CLOUDFLARE_API_TOKEN=your_token \
   -e CLOUDFLARE_ZONES='[{"zoneId":"abc123","domain":"example.com","records":[{"name":"example.com","type":"A"}]}]' \
-  yourusername/cloudflare-dyndns-worker:latest
+  ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest
 ```
 
 ### Using Docker Compose
@@ -88,7 +88,7 @@ docker rm cloudflare-dyndns
 
 1. Install Container Station from App Center
 2. Create new container
-3. Set image: `yourusername/cloudflare-dyndns-worker:latest`
+3. Set image: `ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest`
 4. Add environment variables
 5. Configure resource limits
 6. Start container
@@ -97,7 +97,7 @@ docker rm cloudflare-dyndns
 
 1. Install "Docker" plugin in Apps
 2. Click "Launch Docker Image"
-3. Image name: `yourusername/cloudflare-dyndns-worker:latest`
+3. Image name: `ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest`
 4. Configure environment variables
 5. Set resource limits
 6. Start
@@ -123,7 +123,7 @@ docker rm cloudflare-dyndns
    ```
 4. Deploy worker:
    ```bash
-   git clone https://github.com/yourusername/cloudflare-dyndns-worker.git
+   git clone https://github.com/stefanodecillis/cloudflare-dyndns-worker.git
    cd cloudflare-dyndns-worker
    cp .env.example .env
    nano .env
@@ -164,7 +164,7 @@ docker rm cloudflare-dyndns
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/cloudflare-dyndns-worker.git
+git clone https://github.com/stefanodecillis/cloudflare-dyndns-worker.git
 cd cloudflare-dyndns-worker
 
 # Install dependencies
@@ -394,4 +394,4 @@ When moving to new host:
 
 ---
 
-For additional help, see [README.md](README.md) or [open an issue](https://github.com/yourusername/cloudflare-dyndns-worker/issues).
+For additional help, see [README.md](README.md) or [open an issue](https://github.com/stefanodecillis/cloudflare-dyndns-worker/issues).

@@ -204,8 +204,8 @@ For security matters:
 - **PGP Key**: Available on request (for secure communication)
 
 For general issues:
-- **GitHub Issues**: [Create an issue](https://github.com/yourusername/cloudflare-dyndns-worker/issues)
-- **Discussions**: [Start a discussion](https://github.com/yourusername/cloudflare-dyndns-worker/discussions)
+- **GitHub Issues**: [Create an issue](https://github.com/stefanodecillis/cloudflare-dyndns-worker/issues)
+- **Discussions**: [Start a discussion](https://github.com/stefanodecillis/cloudflare-dyndns-worker/discussions)
 
 ---
 

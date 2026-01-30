@@ -100,7 +100,7 @@ A lightweight, open-source Cloudflare DynDNS worker that automatically updates D
 - Multi-arch builds (amd64, arm64)
 - Trivy security scanning
 - GitHub Actions caching
-- Docker Hub integration
+- GitHub Container Registry integration
 
 ### ✅ Phase 5: Documentation (2/2 plans)
 
@@ -303,7 +303,7 @@ A lightweight, open-source Cloudflare DynDNS worker that automatically updates D
 ### 1. Initial Deployment
 ```bash
 # Pull latest image
-docker pull yourusername/cloudflare-dyndns-worker:latest
+docker pull ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest
 
 # Run with configuration
 docker run -d \
@@ -311,7 +311,7 @@ docker run -d \
   --restart unless-stopped \
   -e CLOUDFLARE_API_TOKEN=your_token \
   -e CLOUDFLARE_ZONES='[{"zoneId":"abc123","domain":"example.com","records":[{"name":"example.com","type":"A"}]}]' \
-  yourusername/cloudflare-dyndns-worker:latest
+  ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest
 ```
 
 ### 2. Configuration
@@ -327,7 +327,7 @@ docker run -d \
 - Check Cloudflare dashboard after first update
 
 ### 4. Updates
-- Pull latest image: `docker pull yourusername/cloudflare-dyndns-worker:latest`
+- Pull latest image: `docker pull ghcr.io/stefanodecillis/cloudflare-dyndns-worker:latest`
 - Recreate container: `docker rm -f cloudflare-dyndns && docker run ...`
 - Check changelog for new features
 
@@ -403,14 +403,11 @@ cloudflare-dyndns-worker/
 ```
 
 **Pre-Release Checklist:**
-- [ ] Update README with actual Docker Hub username
 - [ ] Set up GitHub repository
-- [ ] Configure Docker Hub repository
-- [ ] Set up GitHub Actions secrets (DOCKER_USERNAME, DOCKER_PASSWORD)
 - [ ] Create initial tag: `git tag v0.1.0`
 - [ ] Push tag: `git push origin v0.1.0`
 - [ ] Verify CI/CD pipeline runs
-- [ ] Verify Docker image publishes
+- [ ] Verify Docker image publishes to GHCR
 - [ ] Test pulled Docker image
 - [ ] Create GitHub release (optional)
 
@@ -439,8 +436,8 @@ The Cloudflare DynDNS Worker is **complete, tested, and production-ready**. All 
 **For support or questions, please see:**
 - 📖 [README.md](README.md)
 - 📖 [Deployment Guide](docs/DEPLOYMENT.md)
-- 🐛 [Issues](https://github.com/yourusername/cloudflare-dyndns-worker/issues)
-- 💬 [Discussions](https://github.com/yourusername/cloudflare-dyndns-worker/discussions)
+- 🐛 [Issues](https://github.com/stefanodecillis/cloudflare-dyndns-worker/issues)
+- 💬 [Discussions](https://github.com/stefanodecillis/cloudflare-dyndns-worker/discussions)
 
 ---
 
