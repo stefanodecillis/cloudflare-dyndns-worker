@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  dyndns:
+    build: .
+    container_name: cloudflare-dyndns
+    restart: unless-stopped
+
+    environment:
+      # REQUIRED: Cloudflare API Token
+      # Create at: https://dash.cloudflare.com/profile/api-tokens
+      # Permissions: Zone - DNS - Edit, Zone - Zone - Read
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+
+      # REQUIRED: DNS records to manage (array format)
+      # NO ZONE IDs NEEDED - automatically resolved!
+      - CLOUDFLARE_RECORDS=${CLOUDFLARE_RECORDS}
+
+      # OPTIONAL: Sync intervals (seconds)
+      - SYNC_INTERVAL=${SYNC_INTERVAL:-300}
+      - IP_CHECK_INTERVAL=${IP_CHECK_INTERVAL:-60}
+
+    # Alternative: Use .env file
+    # env_file:
+    #   - .env
+
+    # Resource limits (recommended for NAS)
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 32M
+
+    # Logging options
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Uncomment for custom network
+# networks:
+#   default:
+#     name: dyndns-network

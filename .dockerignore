@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+npm-debug.log
+
+# Build output
+dist
+
+# Git
+.git
+.gitignore
+
+# Planning
+.planning
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+
+# Environment (should use separate .env in production)
+.env
+
+# Tests
+tests
+*.test.ts
+
+# Misc
+*.md
+!README.md
